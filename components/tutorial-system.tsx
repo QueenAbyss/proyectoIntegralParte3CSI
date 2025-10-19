@@ -421,10 +421,58 @@ export function TutorialSystem({
       return true
     }
 
-    // Si tiene un requirement personalizado, ejecuta la función directamente
-    if (currentStepData?.requirement) {
-      return currentStepData.requirement(partitions, leftLimit, rightLimit, currentFunction, approximationType)
-    }
+      // Si tiene un requirement personalizado, ejecuta la función directamente
+      if (currentStepData?.requirement) {
+        // Para MVT, manejar diferentes tipos de requirements
+        if (currentStepData.target === "c-estimator") {
+          // Para MVT, verificar si se ha estimado un punto c
+          // Buscar en el estado del componente o en atributos del DOM
+          const cEstimator = document.querySelector('#c-estimator')
+          const hasUserEstimate = cEstimator ? 
+            cEstimator.getAttribute('data-user-estimate') === 'true' ||
+            cEstimator.querySelector('[data-user-c]') !== null : false
+          
+          // También verificar si hay un punto c visible en la gráfica
+          const graphElement = document.querySelector('#c-estimator canvas, #c-estimator svg')
+          const hasVisualC = graphElement ? 
+            graphElement.querySelector('circle[data-user-estimate], .user-estimate-point') !== null : false
+          
+          console.log('C estimator check:', { hasUserEstimate, hasVisualC })
+          return currentStepData.requirement(hasUserEstimate || hasVisualC)
+        } else if (currentStepData.target === "function-selector") {
+          // Obtener el valor actual de functionType del DOM
+          const functionButtons = document.querySelectorAll('[data-function-type]')
+          let currentFunctionType = "quadratic" // default
+          functionButtons.forEach(button => {
+            // Buscar botón seleccionado por múltiples criterios
+            if (button.classList.contains('bg-primary') || 
+                button.classList.contains('bg-blue-600') ||
+                button.classList.contains('bg-green-600') ||
+                button.classList.contains('bg-emerald-600') ||
+                button.getAttribute('data-selected') === 'true') {
+              currentFunctionType = button.getAttribute('data-function-type') || "quadratic"
+            }
+          })
+          console.log('Current function type detected:', currentFunctionType)
+          return currentStepData.requirement(currentFunctionType)
+        } else if (currentStepData.target === "show-real-c") {
+          // Verificar si el botón de mostrar c real ha sido clickeado
+          const showRealButton = document.querySelector('#show-real-c')
+          const isRealCShown = showRealButton ? 
+            showRealButton.classList.contains('clicked') || 
+            showRealButton.getAttribute('data-clicked') === 'true' ||
+            showRealButton.getAttribute('data-result-shown') === 'true' : false
+          
+          // También verificar si hay resultado visible
+          const resultDisplay = document.querySelector('[data-result], .result-display, .error-display')
+          const hasResult = resultDisplay ? resultDisplay.textContent !== '' : false
+          
+          console.log('Show real C check:', { isRealCShown, hasResult, buttonText: showRealButton?.textContent })
+          return currentStepData.requirement(isRealCShown || hasResult)
+        }
+        // Para otros casos, usar los parámetros originales
+        return currentStepData.requirement(partitions, leftLimit, rightLimit, currentFunction, approximationType)
+      }
 
     // Si no tiene requirements, puede continuar
     return true
@@ -464,7 +512,7 @@ export function TutorialSystem({
       <div
         className={`fixed z-50 ${animationClass}`}
         style={{
-          left: 20,
+          right: 20,
           top: 20,
           maxWidth: "380px",
           pointerEvents: "auto",
@@ -475,12 +523,23 @@ export function TutorialSystem({
         <Card className="w-full p-4 bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-300 shadow-2xl max-h-[80vh] overflow-y-auto">
           {/* Progress Bar */}
           <div className="mb-3">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-xs text-yellow-700">
-                Paso {currentStep} de {steps.length}
-              </span>
-              <span className="text-xs text-yellow-700">{Math.round(progress)}%</span>
-            </div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs text-yellow-700">
+                  Paso {currentStep} de {steps.length}
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-yellow-700">{Math.round(progress)}%</span>
+                  <Button
+                    onClick={onComplete}
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100"
+                    title="Salir del tutorial"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              </div>
             <Progress value={progress} className="h-2 bg-yellow-100" />
           </div>
 

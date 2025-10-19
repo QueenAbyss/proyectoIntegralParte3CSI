@@ -1,14 +1,17 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Sparkles, BookOpen, Eye, Lightbulb } from "lucide-react"
+import { Sparkles, BookOpen, Eye, Lightbulb, MousePointer, Hand } from "lucide-react"
 import { TheorySection } from "./mean-value-theorem/theory-section"
 import { VisualizationSection } from "./mean-value-theorem/visualization-section"
 import { ExamplesSection } from "./mean-value-theorem/examples-section"
 import { FundamentalTheoremVisualization } from "./mean-value-theorem/second-theorem-visualization"
 import { SecondTheoremExamples } from "./mean-value-theorem/second-theorem-examples"
+import { TutorialSystem } from "@/components/tutorial-system"
+import { getTutorialSteps } from "@/components/tutorial-configs"
 
 // Tipos para los datos de ejemplo
 type MVTExampleData = {
@@ -25,6 +28,7 @@ type SecondTheoremExampleData = {
   b: number
 }
 
+
 export function MeanValueTower() {
   const [mainTab, setMainTab] = useState("teoria")
   const [subTab, setSubTab] = useState("teoria")
@@ -37,6 +41,46 @@ export function MeanValueTower() {
   // Estados compartidos para ejemplos
   const [mvtExampleData, setMvtExampleData] = useState<MVTExampleData | null>(null)
   const [secondTheoremExampleData, setSecondTheoremExampleData] = useState<SecondTheoremExampleData | null>(null)
+
+  // Estados del tutorial
+  const [mode, setMode] = useState<"guided" | "free">("free")
+  const [tutorialActive, setTutorialActive] = useState(false)
+  const [tutorialStep, setTutorialStep] = useState(0)
+  const [complexityLevel, setComplexityLevel] = useState<"basic" | "advanced">("basic")
+  const [isTransitioningToFree, setIsTransitioningToFree] = useState(false)
+
+  // Tutorial management
+  const startTutorial = useCallback(() => {
+    console.log("🔄 Iniciando tutorial MVT - Reseteando valores...")
+    setTutorialActive(true)
+    setTutorialStep(1)
+    setMode("guided")
+    
+    // Reiniciar datos de ejemplo para empezar limpio
+    setMvtExampleData({
+      functionType: "quadratic",
+      customFunction: "",
+      a: -2,
+      b: 2
+    })
+    
+    console.log("✅ Tutorial MVT iniciado con valores reiniciados")
+  }, [])
+
+  const completeTutorial = useCallback(() => {
+    setTutorialActive(false)
+    setTutorialStep(0)
+    setIsTransitioningToFree(true)
+    setTimeout(() => {
+      setMode("free")
+      setIsTransitioningToFree(false)
+    }, 2000)
+  }, [])
+
+  const handleTutorialStepChange = useCallback((step: number) => {
+    setTutorialStep(step)
+  }, [])
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-purple-950/20 dark:via-blue-950/20 dark:to-indigo-950/20">
@@ -71,6 +115,58 @@ export function MeanValueTower() {
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Bienvenido al reino mágico del cálculo, donde las derivadas e integrales se encuentran en perfecta armonía
           </p>
+        </div>
+      </div>
+
+      {/* Controles de modo y tutorial */}
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="flex items-center justify-center space-x-4">
+          {/* Indicador de modo */}
+          <div className="flex items-center space-x-2">
+            {mode === "guided" ? (
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                <Hand className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                  Modo Guiado
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-700">
+                <MousePointer className="w-4 h-4 text-green-600 dark:text-green-400" />
+                <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                  Modo Libre
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Botones de tutorial */}
+          {!tutorialActive && mode === "free" && (
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={() => {
+                  setComplexityLevel("basic")
+                  startTutorial()
+                }}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+              >
+                📚 Tutorial Básico
+              </Button>
+              <Button
+                onClick={() => {
+                  setComplexityLevel("advanced")
+                  startTutorial()
+                }}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+              >
+                🎓 Tutorial Avanzado
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -124,12 +220,205 @@ export function MeanValueTower() {
                 {/* Contenido según la pestaña activa */}
                 {subTab === "teoria" && <TheorySection />}
                 {subTab === "visualizaciones" && (
+                  <div className="space-y-4">
+                    {/* Controles de nivel en modo guiado */}
+                    {mode === "guided" && (
+                      <Card className="p-4 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <Hand className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                              Modo Guiado Activo
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-blue-600 dark:text-blue-400">Nivel:</span>
+                            <Button
+                              onClick={() => {
+                                setComplexityLevel("basic")
+                                startTutorial()
+                              }}
+                              variant={complexityLevel === "basic" ? "default" : "outline"}
+                              size="sm"
+                              className="text-xs"
+                            >
+                              🌱 Básico
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setComplexityLevel("advanced")
+                                startTutorial()
+                              }}
+                              variant={complexityLevel === "advanced" ? "default" : "outline"}
+                              size="sm"
+                              className="text-xs"
+                            >
+                              🌟 Avanzado
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    )}
+                    
                   <VisualizationSection 
                     timerState={mvtTimerState}
                     setTimerState={setMvtTimerState}
-                    exampleData={mvtExampleData}
-                    onExampleLoaded={setMvtExampleData}
-                  />
+                      exampleData={mvtExampleData}
+                      onExampleLoaded={setMvtExampleData}
+                      mode={mode}
+                      tutorialActive={tutorialActive}
+                      tutorialStep={tutorialStep}
+                    />
+                    
+                    {/* Sistema de Tutorial solo para MVT Visualizaciones */}
+                    {tutorialActive && (
+                      <>
+                        <TutorialSystem
+                          steps={getTutorialSteps('mvt', complexityLevel)}
+                          currentStep={tutorialStep}
+                          onStepChange={handleTutorialStepChange}
+                          onComplete={completeTutorial}
+                          isVisible={tutorialActive}
+                        />
+                        
+                        {/* CSS específico para MVT - Habilitar elementos según el paso */}
+                        <style jsx global>{`
+                          /* Paso 3: Habilitar solo botones de función */
+                          ${tutorialStep === 3 ? `
+                            #function-selector.tutorial-blocked,
+                            #function-selector.tutorial-blocked * {
+                              opacity: 1 !important;
+                              pointer-events: auto !important;
+                              filter: none !important;
+                              cursor: auto !important;
+                            }
+                            
+                            #function-selector button {
+                              opacity: 1 !important;
+                              pointer-events: auto !important;
+                              filter: none !important;
+                              cursor: auto !important;
+                            }
+                          ` : ''}
+                          
+                          /* Paso 4: Habilitar y hacer brillar sliders de límites */
+                          ${tutorialStep === 4 ? `
+                            #limits.tutorial-blocked,
+                            #limits.tutorial-blocked * {
+                              opacity: 1 !important;
+                              pointer-events: auto !important;
+                              filter: none !important;
+                              cursor: auto !important;
+                            }
+                            
+                            #limits input[type="range"],
+                            #limits [data-radix-slider-root],
+                            #limits [data-radix-slider-track],
+                            #limits [data-radix-slider-thumb] {
+                              opacity: 1 !important;
+                              pointer-events: auto !important;
+                              filter: none !important;
+                              cursor: auto !important;
+                            }
+                            
+                            /* Efecto de brillo para sliders en paso 4 */
+                            #limits {
+                              animation: tutorial-glow 2s ease-in-out infinite alternate !important;
+                              box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.4) !important;
+                              border-radius: 8px !important;
+                              padding: 8px !important;
+                              background: rgba(34, 197, 94, 0.1) !important;
+                            }
+                            
+                            #limits input[type="range"] {
+                              animation: tutorial-slider-glow 1.5s ease-in-out infinite alternate !important;
+                              box-shadow: 0 0 15px rgba(34, 197, 94, 0.8) !important;
+                            }
+                            
+                            #limits [data-radix-slider-track] {
+                              animation: tutorial-track-glow 1.5s ease-in-out infinite alternate !important;
+                              box-shadow: 0 0 10px rgba(34, 197, 94, 0.6) !important;
+                            }
+                            
+                            #limits [data-radix-slider-thumb] {
+                              animation: tutorial-thumb-glow 1.5s ease-in-out infinite alternate !important;
+                              box-shadow: 0 0 20px rgba(34, 197, 94, 1) !important;
+                            }
+                            
+                            @keyframes tutorial-glow {
+                              0% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.4); }
+                              100% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.8), 0 0 60px rgba(34, 197, 94, 0.6); }
+                            }
+                            
+                            @keyframes tutorial-slider-glow {
+                              0% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.8); }
+                              100% { box-shadow: 0 0 25px rgba(34, 197, 94, 1); }
+                            }
+                            
+                            @keyframes tutorial-track-glow {
+                              0% { box-shadow: 0 0 10px rgba(34, 197, 94, 0.6); }
+                              100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.8); }
+                            }
+                            
+                            @keyframes tutorial-thumb-glow {
+                              0% { box-shadow: 0 0 20px rgba(34, 197, 94, 1); }
+                              100% { box-shadow: 0 0 30px rgba(34, 197, 94, 1), 0 0 40px rgba(34, 197, 94, 0.8); }
+                            }
+                          ` : ''}
+                          
+                          /* Paso 5: Habilitar estimación de c */
+                          ${tutorialStep === 5 ? `
+                            #c-estimator.tutorial-blocked,
+                            #c-estimator.tutorial-blocked * {
+                              opacity: 1 !important;
+                              pointer-events: auto !important;
+                              filter: none !important;
+                              cursor: auto !important;
+                            }
+                          ` : ''}
+                          
+                          /* Paso 6: Habilitar botón "Buscar c" */
+                          ${tutorialStep === 6 ? `
+                            #show-real-c.tutorial-blocked,
+                            #show-real-c.tutorial-blocked * {
+                              opacity: 1 !important;
+                              pointer-events: auto !important;
+                              filter: none !important;
+                              cursor: auto !important;
+                            }
+                            
+                            /* Botón brillante antes de hacer clic */
+                            #show-real-c:not(.clicked) {
+                              animation: tutorial-button-glow 2s ease-in-out infinite alternate !important;
+                              box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.4) !important;
+                              background: rgba(34, 197, 94, 0.1) !important;
+                            }
+                            
+                            /* Ocultar botón después de hacer clic */
+                            #show-real-c.clicked {
+                              opacity: 0.3 !important;
+                              pointer-events: none !important;
+                              background: transparent !important;
+                              border: 2px dashed rgba(34, 197, 94, 0.3) !important;
+                              color: rgba(34, 197, 94, 0.5) !important;
+                              animation: none !important;
+                              box-shadow: none !important;
+                            }
+                            
+                            /* Ocultar completamente el texto del botón después del clic */
+                            #show-real-c.clicked * {
+                              opacity: 0 !important;
+                            }
+                            
+                            @keyframes tutorial-button-glow {
+                              0% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.4); }
+                              100% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.8), 0 0 60px rgba(34, 197, 94, 0.6); }
+                            }
+                          ` : ''}
+                        `}</style>
+                      </>
+                    )}
+                  </div>
                 )}
                 {subTab === "ejemplos" && (
                   <ExamplesSection 
@@ -287,6 +576,7 @@ export function MeanValueTower() {
           </Tabs>
         </Card>
       </div>
+
     </div>
   )
 }

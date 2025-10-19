@@ -291,12 +291,185 @@ export const BRIDGE_TUTORIAL_STEPS_ADVANCED: TutorialStep[] = [
   },
 ]
 
+// Configuración de tutoriales para la Torre del Valor Medio
+export const MVT_TUTORIAL_STEPS_BASIC: TutorialStep[] = [
+  {
+    id: 1,
+    title: "¡Bienvenida a la Torre del Valor Medio!",
+    description: "Soy Aria, tu guía mágica. Te ayudaré a entender el Teorema del Valor Medio escalando esta torre encantada.",
+    target: "fairy",
+    position: { x: 50, y: 20 },
+    fairyMessage: "¡Hola! Estoy emocionada de enseñarte sobre el Teorema del Valor Medio. ¿Estás listo para esta aventura matemática?",
+    hint: "💡 El Teorema del Valor Medio dice que si una función es continua en [a,b] y derivable en (a,b), entonces existe un punto c donde la pendiente de la tangente es igual a la pendiente de la secante.",
+    isObservationOnly: true,
+  },
+  {
+    id: 2,
+    title: "La Torre Mágica",
+    description: "Esta torre representa nuestra función f(x). Necesitamos encontrar el punto c donde la pendiente de la tangente es igual a la pendiente de la secante.",
+    target: "canvas",
+    position: { x: 400, y: 150 },
+    action: "Observa cómo la torre forma una curva suave",
+    fairyMessage: "La torre debe ser continua y suave. Solo así podemos aplicar el Teorema del Valor Medio.",
+    hint: "🔍 La función debe ser continua en [a,b] y derivable en (a,b). La torre no puede tener saltos ni esquinas afiladas.",
+    isObservationOnly: true,
+  },
+  {
+    id: 3,
+    title: "La Función de la Torre",
+    description: "Selecciona el tipo de función que forma nuestra torre. Cada función tiene su propia magia y comportamiento.",
+    target: "function-selector",
+    position: { x: 150, y: 100 },
+    action: "Selecciona un tipo de función diferente y oprima el botón pista para ver la información",
+    fairyMessage: "¡Cada función crea una torre única! La parábola es suave, el seno es ondulante, y la cúbica es más compleja.",
+    hint: "🌊 Prueba la función seno para ver una torre ondulante, o la cúbica para una torre más compleja. ¡Cada una tiene su propio punto c!",
+    requirement: (functionType: string) => {
+      return functionType !== "quadratic"
+    },
+  },
+  {
+    id: 4,
+    title: "Los Límites de la Torre",
+    description: "Estos controles rojos y azules marcan los puntos a y b de nuestro intervalo. Ajusta estos valores para cambiar el tramo de la torre que estudiamos.",
+    target: "limits",
+    position: { x: 300, y: 400 },
+    action: "Ajusta los límites a y b del intervalo",
+    fairyMessage: "Los límites definen el tramo de la torre que vamos a analizar. ¡Experimenta con diferentes valores!",
+    hint: "📏 Cambia los valores de a y b para ver cómo afecta la pendiente de la secante. ¡Prueba con a=-2, b=2!",
+    requirement: (a: number, b: number) => {
+      return a !== -2 || b !== 2
+    },
+  },
+  {
+    id: 5,
+    title: "Estimación del Punto C",
+    description: "Ahora intenta estimar dónde está el punto c. Usa el control deslizante para hacer tu estimación y verifica qué tan cerca estás.",
+    target: "c-estimator",
+    position: { x: 400, y: 250 },
+    action: "Estima el valor de c usando el control deslizante",
+    fairyMessage: "¡Haz tu mejor estimación! El punto c debe estar entre a y b, donde la pendiente de la tangente es igual a la de la secante.",
+    hint: "🎯 El punto c está donde la pendiente de la tangente es igual a la pendiente de la secante. ¡Usa tu intuición matemática!",
+    requirement: (c: number) => {
+      return c !== null && c !== undefined
+    },
+  },
+  {
+    id: 6,
+    title: "Ver el Punto C Real",
+    description: "Ahora haz clic en el botón para mostrar el punto c real y ver qué tan cerca estuviste de tu estimación.",
+    target: "show-real-c",
+    position: { x: 400, y: 300 },
+    action: "Haz clic en el botón para mostrar el punto c real",
+    fairyMessage: "¡Es hora de la verdad! Veamos qué tan precisa fue tu estimación comparada con el valor real del Teorema del Valor Medio.",
+    hint: "🔍 El botón te mostrará el punto c exacto donde la pendiente de la tangente es igual a la pendiente de la secante.",
+    requirement: (showReal: boolean) => {
+      return showReal === true
+    },
+  },
+  {
+    id: 7,
+    title: "¡Felicidades, Aprendiz!",
+    description: "Has completado el tutorial básico. Ahora puedes explorar libremente la Torre del Valor Medio y experimentar con todas las herramientas.",
+    target: "completion",
+    position: { x: 300, y: 200 },
+    fairyMessage: "¡Excelente trabajo! Ahora eres oficialmente mi aprendiz del Teorema del Valor Medio. ¡Ve y experimenta!",
+    hint: "🌟 ¡Ahora eres un experto en el Teorema del Valor Medio! En el modo libre puedes: cambiar los límites, probar diferentes funciones, y encontrar el punto c mágico.",
+    isObservationOnly: true,
+  },
+]
+
+export const MVT_TUTORIAL_STEPS_ADVANCED: TutorialStep[] = [
+  {
+    id: 1,
+    title: "¡Bienvenida al Nivel Avanzado!",
+    description: "Soy Aria, tu guía mágica. Ahora exploraremos el Teorema del Valor Medio con más profundidad: estimación, precisión y diferentes funciones.",
+    target: "fairy",
+    position: { x: 50, y: 20 },
+    fairyMessage: "¡Excelente! Ahora que dominas lo básico, profundicemos en la magia del Teorema del Valor Medio. ¡Prepárate para experimentar más!",
+    hint: "🌟 ¡Nivel avanzado activado! Aquí explorarás la estimación del punto c, análisis de error, y experimentarás con diferentes funciones. ¡Matemáticas de nivel superior!",
+    isObservationOnly: true,
+  },
+  {
+    id: 2,
+    title: "La Pendiente Mágica",
+    description: "Observa cómo la pendiente de la secante (línea roja) debe ser igual a la pendiente de la tangente en el punto c. ¡Es la magia del teorema!",
+    target: "canvas",
+    position: { x: 400, y: 150 },
+    action: "Observa la pendiente de la secante y la tangente",
+    fairyMessage: "¡Mira cómo las pendientes deben ser iguales! ¡Es la esencia del Teorema del Valor Medio!",
+    hint: "📈 La pendiente de la secante es (f(b)-f(a))/(b-a). En el punto c, la pendiente de la tangente f'(c) debe ser igual a esta pendiente.",
+    isObservationOnly: true,
+  },
+  {
+    id: 3,
+    title: "Estimación del Punto C",
+    description: "Ahora intenta estimar dónde está el punto c. Usa el control deslizante para hacer tu estimación y verifica qué tan cerca estás.",
+    target: "c-estimator",
+    position: { x: 300, y: 300 },
+    action: "Estima el valor de c usando el control deslizante",
+    fairyMessage: "¡Haz tu mejor estimación! El punto c debe estar entre a y b, donde la pendiente de la tangente es igual a la de la secante.",
+    hint: "🎯 Para una parábola f(x)=x² en [-2,2], el punto c está en x=0. ¡Intenta estimar y verifica tu precisión!",
+    requirement: (userEstimateC: number) => {
+      return userEstimateC !== null
+    },
+  },
+  {
+    id: 4,
+    title: "Explora Diferentes Funciones",
+    description: "Cambia la función a 'Seno' para ver cómo el Teorema del Valor Medio se adapta a diferentes formas. ¡Cada función tiene su propia magia!",
+    target: "function-selector",
+    position: { x: 150, y: 100 },
+    action: "Selecciona 'Seno' para una función ondulante",
+    fairyMessage: "¡La función seno crea una torre ondulante! ¡Observa cómo cambia el punto c con esta nueva forma!",
+    hint: "🌊 La función seno oscila entre -1 y 1. ¡Observa cómo el punto c se adapta a esta oscilación!",
+    requirement: (functionType: string) => {
+      return functionType === "sin"
+    },
+  },
+  {
+    id: 5,
+    title: "Precisión y Error",
+    description: "Observa cómo el error de tu estimación se calcula automáticamente. ¡Intenta conseguir un error menor a 0.2 para desbloquear el logro 'Ojo de Águila'!",
+    target: "error-display",
+    position: { x: 500, y: 200 },
+    action: "Observa el cálculo del error en tiempo real",
+    fairyMessage: "¡El error te dice qué tan cerca estás del punto c real! ¡Intenta conseguir un error muy pequeño!",
+    hint: "🎯 Error = |c_real - c_estimado|. Un error < 0.2 es excelente, < 0.1 es perfecto. ¡Apunta a la precisión!",
+    isObservationOnly: true,
+  },
+  {
+    id: 6,
+    title: "Experimenta con Límites",
+    description: "Cambia los límites a y b para ver cómo afecta la posición del punto c. ¡Diferentes intervalos dan diferentes puntos c!",
+    target: "limits",
+    position: { x: 300, y: 400 },
+    action: "Cambia los límites a y b del intervalo",
+    fairyMessage: "¡Cada intervalo tiene su propio punto c! ¡Experimenta con diferentes valores para ver cómo cambia!",
+    hint: "📏 Prueba con a=-3, b=3 o a=-1, b=1. ¡Observa cómo el punto c se mueve con el intervalo!",
+    requirement: (a: number, b: number) => {
+      return a !== -2 || b !== 2
+    },
+  },
+  {
+    id: 7,
+    title: "¡Maestro del Teorema del Valor Medio!",
+    description: "Has dominado los conceptos avanzados. ¡Ahora eres un verdadero experto en el Teorema del Valor Medio! ¡Explora libremente y descubre más magia matemática!",
+    target: "completion",
+    position: { x: 300, y: 200 },
+    fairyMessage: "¡Increíble! Has dominado el Teorema del Valor Medio avanzado. ¡Eres un verdadero mago de las matemáticas!",
+    hint: "🏆 ¡Felicidades! Has completado el tutorial avanzado. Ahora puedes explorar libremente, experimentar con diferentes funciones, y entender la estimación del punto c. ¡Eres un experto!",
+    isObservationOnly: true,
+  },
+]
+
 // Función para obtener los pasos del tutorial según el contexto
-export function getTutorialSteps(context: 'riemann' | 'bridge', level: 'basic' | 'advanced'): TutorialStep[] {
+export function getTutorialSteps(context: 'riemann' | 'bridge' | 'mvt', level: 'basic' | 'advanced'): TutorialStep[] {
   if (context === 'riemann') {
     return level === 'basic' ? RIEMANN_TUTORIAL_STEPS_BASIC : RIEMANN_TUTORIAL_STEPS_ADVANCED
   } else if (context === 'bridge') {
     return level === 'basic' ? BRIDGE_TUTORIAL_STEPS_BASIC : BRIDGE_TUTORIAL_STEPS_ADVANCED
+  } else if (context === 'mvt') {
+    return level === 'basic' ? MVT_TUTORIAL_STEPS_BASIC : MVT_TUTORIAL_STEPS_ADVANCED
   }
   return []
 }

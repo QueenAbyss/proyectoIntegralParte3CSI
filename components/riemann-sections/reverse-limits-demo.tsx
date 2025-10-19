@@ -257,7 +257,7 @@ export function ReverseLimitsDemo({ onBack }: ReverseLimitsDemoProps) {
                         Valor: {calculations.integralBA.toFixed(4)}
                       </div>
                     </div>
-                  </div>
+                </div>
               </div>
             ) : (
               <div className="h-80 flex items-center justify-center text-gray-500">

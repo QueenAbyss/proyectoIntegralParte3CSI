@@ -30,9 +30,12 @@ interface VisualizationSectionProps {
     b: number
   } | null
   onExampleLoaded?: (data: any) => void
+  mode?: "guided" | "free"
+  tutorialActive?: boolean
+  tutorialStep?: number
 }
 
-export function VisualizationSection({ timerState, setTimerState, exampleData, onExampleLoaded }: VisualizationSectionProps) {
+export function VisualizationSection({ timerState, setTimerState, exampleData, onExampleLoaded, mode, tutorialActive, tutorialStep }: VisualizationSectionProps) {
   // Estados principales
   const [a, setA] = useState(-2.0)
   const [b, setB] = useState(2.0)
@@ -342,7 +345,7 @@ export function VisualizationSection({ timerState, setTimerState, exampleData, o
             </p>
 
             {/* Parámetros del intervalo */}
-            <div className="space-y-4">
+            <div id="limits" className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Punto inicial a = {a.toFixed(1)}
@@ -375,12 +378,13 @@ export function VisualizationSection({ timerState, setTimerState, exampleData, o
             </div>
 
             {/* Selección de función */}
-            <div className="mt-6">
+            <div id="function-selector" className="mt-6">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 block">
                 Tipo de función
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <Button
+                  data-function-type="quadratic"
                   onClick={() => setFunctionType("quadratic")}
                   variant={functionType === "quadratic" ? "default" : "outline"}
                   size="sm"
@@ -389,6 +393,7 @@ export function VisualizationSection({ timerState, setTimerState, exampleData, o
                   x²
                 </Button>
                 <Button
+                  data-function-type="cubic"
                   onClick={() => setFunctionType("cubic")}
                   variant={functionType === "cubic" ? "default" : "outline"}
                   size="sm"
@@ -397,6 +402,7 @@ export function VisualizationSection({ timerState, setTimerState, exampleData, o
                   x³
                 </Button>
                 <Button
+                  data-function-type="sin"
                   onClick={() => setFunctionType("sin")}
                   variant={functionType === "sin" ? "default" : "outline"}
                   size="sm"
@@ -405,6 +411,7 @@ export function VisualizationSection({ timerState, setTimerState, exampleData, o
                   sin(x)
                 </Button>
                 <Button
+                  data-function-type="custom"
                   onClick={() => setFunctionType("custom")}
                   variant={functionType === "custom" ? "default" : "outline"}
                   size="sm"
@@ -512,23 +519,37 @@ export function VisualizationSection({ timerState, setTimerState, exampleData, o
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Haz clic para colocar tu estimación de c
             </p>
-            <MeanValueGraph
-              functionType={functionType}
-              customFunction={customFunction}
-              a={a}
-              b={b}
-              userEstimateC={userEstimateC}
-              actualC={result?.actualC}
-              onEstimateC={handleEstimateC}
-              isLocked={isLocked}
-            />
+            <div id="canvas">
+              <div 
+                id="c-estimator"
+                data-user-estimate={userEstimateC !== null ? 'true' : 'false'}
+                data-user-c={userEstimateC || ''}
+              >
+                <MeanValueGraph
+                  functionType={functionType}
+                  customFunction={customFunction}
+                  a={a}
+                  b={b}
+                  userEstimateC={userEstimateC}
+                  actualC={result?.actualC}
+                  onEstimateC={handleEstimateC}
+                  isLocked={isLocked}
+                />
+              </div>
+            </div>
           </Card>
 
           {/* Controles de verificación */}
           <Card className="p-4">
             <div className="flex gap-3">
               <Button
-                onClick={handleVerifyC}
+                id="show-real-c"
+                onClick={(e) => {
+                  handleVerifyC()
+                  // Marcar que se hizo clic para el tutorial
+                  e.currentTarget.setAttribute('data-clicked', 'true')
+                  e.currentTarget.classList.add('clicked')
+                }}
                 disabled={userEstimateC === null || isVerifying}
                 className="flex-1"
               >
@@ -546,7 +567,12 @@ export function VisualizationSection({ timerState, setTimerState, exampleData, o
 
             {/* Resultado */}
             {result && (
-              <div className="mt-4 p-3 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div 
+                id="error-display" 
+                data-result="true"
+                data-result-shown="true"
+                className="mt-4 p-3 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 rounded-lg border border-green-200 dark:border-green-800"
+              >
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-semibold text-gray-800 dark:text-gray-100">
                   Resultado
