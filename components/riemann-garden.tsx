@@ -7,16 +7,17 @@ import { Slider } from "@/components/ui/slider"
 import { Badge } from "@/components/ui/badge"
 import { Play, Pause, RotateCcw, BookOpen, MousePointer, Hand, ChevronDown, ChevronUp } from "lucide-react"
 import { TutorialSystem, type TutorialStep } from "@/components/tutorial-system"
-import { DraggableCanvas } from "@/components/draggable-canvas"
-import { ErrorVerification } from "@/components/error-verification"
-import { IntegralProperties } from "@/components/integral-properties"
 import { TheorySection } from "@/components/theory-section"
-import { RiemannNavigation } from "@/components/riemann-navigation"
-import { RiemannExamples } from "@/components/riemann-examples"
-import { LinearityDemo } from "@/components/linearity-demo"
-import { AdditivityDemo } from "@/components/additivity-demo"
-import { ReverseLimitsDemo } from "@/components/reverse-limits-demo"
-import { ComparisonDemo } from "@/components/comparison-demo"
+import { 
+  DraggableCanvas,
+  ErrorVerification,
+  IntegralProperties,
+  RiemannExamples,
+  LinearityDemo,
+  AdditivityDemo,
+  ReverseLimitsDemo,
+  ComparisonDemo
+} from "@/components/riemann-sections"
 
 // Mathematical functions for the garden
 const functions = {
@@ -476,7 +477,7 @@ export default function RiemannGarden() {
       return <LinearityDemo onBack={handleBackFromDemo} />
     } else if (currentDemo === "additivity") {
       return <AdditivityDemo onBack={handleBackFromDemo} />
-    } else if (currentDemo === "reverse-limits") {
+    } else if (currentDemo === "reverse_limits") {
       return <ReverseLimitsDemo onBack={handleBackFromDemo} />
     } else if (currentDemo === "comparison") {
       return <ComparisonDemo onBack={handleBackFromDemo} />
@@ -569,8 +570,8 @@ export default function RiemannGarden() {
             </Button>
             <Button
               onClick={() => setActiveTab("visualizations")}
-              variant={activeTab === "visualizations" ? "default" : "outline"}
-              className="px-6 py-2 bg-green-600 text-white"
+              variant={activeTab === "visualizations" ? "success" : "outline"}
+              className="px-6 py-2"
             >
               📊 Visualizaciones
             </Button>
@@ -810,7 +811,7 @@ export default function RiemannGarden() {
               <div className="text-center">
                       {partitions[0] < 10 && <Badge variant="destructive" className="text-xs">Burda</Badge>}
                       {partitions[0] >= 10 && partitions[0] < 25 && <Badge variant="secondary" className="text-xs">Buena</Badge>}
-                      {partitions[0] >= 25 && <Badge className="bg-green-500 text-xs">Excelente</Badge>}
+                      {partitions[0] >= 25 && <Badge variant="success" className="text-xs">Excelente</Badge>}
               </div>
             </div>
           </Card>

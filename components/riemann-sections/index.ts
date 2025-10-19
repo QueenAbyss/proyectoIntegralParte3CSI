@@ -1,0 +1,9 @@
+// Barrel exports for Riemann sections
+export { RiemannExamples } from './riemann-examples'
+export { DraggableCanvas } from './draggable-canvas'
+export { ErrorVerification } from './error-verification'
+export { IntegralProperties } from './integral-properties'
+export { LinearityDemo } from './linearity-demo'
+export { AdditivityDemo } from './additivity-demo'
+export { ReverseLimitsDemo } from './reverse-limits-demo'
+export { ComparisonDemo } from './comparison-demo'
